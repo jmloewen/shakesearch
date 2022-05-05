@@ -58,6 +58,7 @@ func handleSearch(searcher Searcher) func(w http.ResponseWriter, r *http.Request
 			return
 		}
 		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("Access-Control-Allow-Origin", "*")
 		w.Write(buf.Bytes())
 	}
 }
@@ -72,6 +73,28 @@ func (s *Searcher) Load(filename string) error {
 	return nil
 }
 
+/*
+func (s *Searcher) RegSearch(query string) []string {
+	idxs := s.SuffixArray.Lookup([]byte(query), -1)
+	results := []string{}
+	for _, idx := range idxs {
+		results = append(results, s.CompleteWorks[idx-250:idx+250])
+	}
+	return results
+}
+*/
+
+/*There are various improvements I would make to this endpoint - but as I am leaving
+this as mostly a front end exercise, I will simply list them here:
+-I would provide another endpoint allowing for regular expression search.
+-I would either process the source data to remove the escaped strings, or process
+the strings here to remove the escape characters.  From the front end side, I cannot deal with the\
+escape characters on this data - it is a hindrance to our search.
+-The base Search functionality would be modified with regex to permit both capitalization
+and lowercase letters.  this responsibility belongs to the backend, not the frontend.
+-Instead of prior and latter 250 characters, we might search for a newline surrounding the string.
+
+*/
 func (s *Searcher) Search(query string) []string {
 	idxs := s.SuffixArray.Lookup([]byte(query), -1)
 	results := []string{}
